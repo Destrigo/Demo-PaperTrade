@@ -1,0 +1,745 @@
+{
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "search": "Search",
+    "trade": "Trade",
+    "friends": "Friends",
+    "messages": "Messages",
+    "leaderboard": "Leaderboard",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "open": "Open menu",
+    "close": "Close menu"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "submit": "Submit",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No",
+    "or": "or",
+    "noData": "No data available",
+    "seeAll": "See all",
+    "download": "Download",
+    "export": "Export",
+    "selectLanguage": "Select language",
+    "justNow": "just now"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "markets": "Markets",
+    "trading": "Trading",
+    "portfolio": "Portfolio",
+    "analytics": "Analytics",
+    "chat": "Chat",
+    "leaderboard": "Leaderboard",
+    "settings": "Settings",
+    "profile": "Profile",
+    "friends": "Friends",
+    "notifications": "Notifications",
+    "logout": "Log out",
+    "login": "Log in",
+    "register": "Register"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "username": "Username",
+    "displayName": "Display name",
+    "loginTitle": "Welcome back",
+    "loginSubtitle": "Sign in to your account",
+    "registerTitle": "Create an account",
+    "registerSubtitle": "Start trading today",
+    "loginButton": "Sign in",
+    "registerButton": "Sign up",
+    "alreadyHaveAccount": "Already have an account?",
+    "noAccount": "Don't have an account?",
+    "forgotPassword": "Forgot password?",
+    "emailPlaceholder": "you@example.com",
+    "passwordPlaceholder": "Enter your password",
+    "usernamePlaceholder": "Choose a username",
+    "loginWith": "Sign in with {{provider}}",
+    "orContinueWith": "Or continue with",
+    "twoFactor": "Two-factor authentication",
+    "twoFactorCode": "Enter your 6-digit code",
+    "twoFactorPlaceholder": "000000",
+    "verifyCode": "Verify",
+    "invalidCredentials": "Invalid email or password",
+    "emailTaken": "This email is already in use",
+    "usernameTaken": "This username is already taken",
+    "weakPassword": "Password must be 8–72 characters and contain a letter and a digit",
+    "continueWithGoogle": "Continue with Google",
+    "continueWithGithub": "Continue with GitHub",
+    "continueWithFortyTwo": "Continue with 42",
+    "oauthNotConfigured": "This sign-in provider is not configured",
+    "errors": {
+      "noPasswordToChange": "This account has no password to change (OAuth-only)",
+      "wrongCurrentPassword": "Current password is incorrect",
+      "passwordSameAsOld": "New password must be different from the current one",
+      "setupNotInitiated": "2FA setup has not been started",
+      "invalid2faCode": "Invalid 2FA code",
+      "invalid2fationCode": "Invalid 2FA code",
+      "twoFactorNotActive": "Two-factor authentication is not active",
+      "accessDenied": "Your session expired. Please sign in again.",
+      "oauthConflict": "An account with this email already exists with a different sign-in method.",
+      "oauthEmailMissing": "The sign-in provider did not share an email address.",
+      "oauthEmailNotVerified": "Your email address is not verified with this provider.",
+      "twoFactorAlreadyEnabled": "Two-factor authentication is already enabled",
+      "twoFactorAttemptsExceeded": "Too many invalid codes. Please sign in again.",
+      "userNotFound": "User not found"
+    },
+    "validation": {
+      "invalidEmail": "Invalid email address",
+      "emailRequired": "Email is required",
+      "usernameRequired": "Username is required",
+      "usernameTooShort": "Username must be at least 3 characters",
+      "usernameTooLong": "Username must be at most 50 characters",
+      "usernameInvalidChars": "Username can only contain letters, numbers, underscores, and hyphens",
+      "passwordRequired": "Password is required",
+      "invalidLanguage": "Invalid language",
+      "codeRequired": "Code is required",
+      "codeLengthInvalid": "Code must be 6 characters",
+      "codeNumericOnly": "Code must contain only numbers",
+      "loginTokenRequired": "Login token is required",
+      "passwordTooLong": "Password must be at most 72 characters",
+      "passwordTooShort": "Password must be at least 8 characters",
+      "passwordTooWeak": "Password must contain at least one letter and one digit"
+    },
+    "passwordHint": "8–72 characters, with at least one letter and one digit.",
+    "passwordsDontMatch": "Passwords do not match",
+    "registerFailed": "Could not create your account. Please try again.",
+    "twoFactorLoginPrompt": "Enter the 6-digit code from your authenticator app."
+  },
+  "profile": {
+    "loading": "Loading your profile…",
+    "title": "Profile",
+    "goToTrading": "Go to Trading",
+    "changeAvatar": "Change avatar",
+    "uploading": "Uploading…",
+    "online": "Online",
+    "offline": "Offline",
+    "email": "Email",
+    "balance": "Balance",
+    "lastSeen": "Last seen",
+    "depositLabel": "Add funds",
+    "depositPlaceholder": "Amount",
+    "depositButton": "Deposit",
+    "depositing": "Depositing…",
+    "invalidAmount": "Enter a valid amount",
+    "depositFailed": "Deposit failed. Please try again.",
+    "avatarInvalidType": "Please choose an image file",
+    "avatarTooLarge": "Image must be smaller than 5 MB",
+    "avatarUploadFailed": "Could not upload avatar. Please try again.",
+    "username": "Username",
+    "displayName": "Display name",
+    "displayNamePlaceholder": "How others see you",
+    "usernameRequired": "Username is required",
+    "saveFailed": "Could not save changes. Please try again.",
+    "saved": "Changes saved",
+    "saveButton": "Save changes",
+    "saving": "Saving…",
+    "loggingOut": "Logging out…",
+    "logoutButton": "Log out",
+    "avatarAlt": "Your avatar",
+    "depositSuccess": "{{amount}} added to your balance",
+    "depositTooLarge": "The maximum deposit is {{max}}.",
+    "depositTooManyDecimals": "Use at most 2 decimals.",
+    "depositTooSmall": "The minimum deposit is $1.",
+    "joined": "Joined {{date}}",
+    "notFound": "This trader doesn’t exist or the profile is unavailable."
+  },
+  "search": {
+    "title": "Find traders",
+    "subtitle": "Search by username or display name",
+    "placeholder": "Search traders…",
+    "noQuery": "Start typing to find other traders.",
+    "noResults": "No traders match \"{{query}}\".",
+    "loading": "Searching…",
+    "error": "Couldn't load results. Try again.",
+    "retry": "Retry",
+    "online": "Online",
+    "offlineSince": "Last seen {{time}}",
+    "addFriend": "Add friend",
+    "requestFailed": "Could not send request",
+    "message": "Message",
+    "comingSoon": "Coming soon",
+    "resultsCount": "{{count}} trader found",
+    "resultsCount_other": "{{count}} traders found",
+    "page": "Page {{page}} of {{totalPages}}",
+    "prev": "Previous",
+    "next": "Next",
+    "messageFriendsOnly": "You must be friends to send messages"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back, {{name}}",
+    "portfolioValue": "Portfolio value",
+    "balance": "Available balance",
+    "totalPnl": "Total P&L",
+    "holdings": "Holdings",
+    "recentTrades": "Recent trades",
+    "topAssets": "Top assets",
+    "marketOverview": "Market overview",
+    "quickTrade": "Quick trade",
+    "performanceChart": "Performance",
+    "today": "Today",
+    "thisWeek": "This week",
+    "thisMonth": "This month",
+    "allTime": "All time"
+  },
+  "markets": {
+    "title": "Markets",
+    "allAssets": "All assets",
+    "crypto": "Crypto",
+    "stocks": "Stocks",
+    "name": "Name",
+    "symbol": "Symbol",
+    "price": "Price",
+    "change24h": "24h change",
+    "volume": "Volume",
+    "marketCap": "Market cap",
+    "searchPlaceholder": "Search assets...",
+    "noResults": "No assets found",
+    "liveUpdate": "Live prices"
+  },
+  "trading": {
+    "title": "Trade",
+    "cash": "Cash",
+    "holdingsValue": "Holdings value",
+    "totalPnl": "Total P&L",
+    "buy": "Buy",
+    "sell": "Sell",
+    "marketOrder": "Market order",
+    "limitOrder": "Limit order",
+    "quantity": "Quantity",
+    "price": "Price",
+    "total": "Total",
+    "estimatedTotal": "Estimated total",
+    "availableBalance": "Available balance",
+    "availableHoldings": "Available",
+    "placeOrder": "Place order",
+    "confirmOrder": "Confirm order",
+    "orderType": "Order type",
+    "limitPrice": "Limit price",
+    "currentPrice": "Current price",
+    "orderHistory": "Order history",
+    "openOrders": "Open orders",
+    "cancelOrder": "Cancel order",
+    "status": "Status",
+    "date": "Date",
+    "type": "Type",
+    "side": "Side",
+    "pending": "Pending",
+    "filled": "Filled",
+    "cancelled": "Cancelled",
+    "insufficientBalance": "Insufficient balance",
+    "insufficientHoldings": "Insufficient holdings",
+    "minQuantity": "Minimum quantity is 0.0001",
+    "assetTable": {
+      "searchPlaceholder": "Search name or symbol",
+      "allTypes": "All types",
+      "crypto": "Crypto",
+      "stock": "Stock",
+      "colAsset": "Asset",
+      "colChange": "24h",
+      "colMktCap": "Mkt cap",
+      "loading": "Loading assets…",
+      "noResults": "No assets match this search.",
+      "errorLoad": "Could not load assets. Try again.",
+      "prev": "Prev",
+      "next": "Next",
+      "pageInfo": "Page {{current}} / {{total}}"
+    },
+    "holdingsTable": {
+      "title": "Your holdings",
+      "noHoldings": "No holdings yet. Buy an asset to see it here.",
+      "avg": "avg"
+    },
+    "orderPanel": {
+      "selectAssetPrompt": "Select an asset from the market list to place an order.",
+      "holdingInfo": "You hold {{quantity}} {{symbol}} · avg {{avgPrice}}",
+      "max": "Max",
+      "insufficientHoldingsError": "You only hold {{max}} {{symbol}}.",
+      "successBought": "Bought {{quantity}} {{symbol}}",
+      "successSold": "Sold {{quantity}} {{symbol}}",
+      "successLimitPlaced": "Limit order placed for {{quantity}} {{symbol}}",
+      "errorFailed": "Order failed. Try again.",
+      "placingOrder": "Placing order…",
+      "quantityTooSmall": "The minimum quantity is 0.00000001."
+    },
+    "openOrdersTable": {
+      "noOrders": "No open limit orders.",
+      "errorCancel": "Could not cancel order.",
+      "cancelling": "Cancelling…",
+      "targetInfo": "target {{price}} · placed {{date}}",
+      "cancelConfirm": "Cancel your {{side}} order for {{quantity}} {{symbol}} at {{price}}?",
+      "cancelSuccess": "{{symbol}} order cancelled"
+    },
+    "orderHistoryTable": {
+      "noOrders": "No orders yet."
+    }
+  },
+  "portfolio": {
+    "title": "Portfolio",
+    "totalValue": "Total value",
+    "balance": "Cash balance",
+    "invested": "Invested",
+    "totalPnl": "Total P&L",
+    "asset": "Asset",
+    "quantity": "Quantity",
+    "avgBuyPrice": "Avg. buy price",
+    "currentPrice": "Current price",
+    "currentValue": "Current value",
+    "pnl": "P&L",
+    "pnlPercent": "P&L %",
+    "allocation": "Allocation",
+    "emptyPortfolio": "Your portfolio is empty",
+    "startTrading": "Start trading to see your holdings here",
+    "noHistoryYet": "No portfolio history yet — check back tomorrow"
+  },
+  "analytics": {
+    "title": "Analytics",
+    "performance": "Performance",
+    "allocation": "Allocation",
+    "tradeHistory": "Trade history",
+    "summary": "Summary",
+    "portfolioValue": "Portfolio value",
+    "livePortfolioValue": "Live portfolio value",
+    "liveTotalPnl": "Live total P&L",
+    "snapshotPortfolioValue": "Last daily snapshot",
+    "seriesTotalValue": "Total value",
+    "seriesHoldingsValue": "Holdings value",
+    "seriesCashBalance": "Cash balance",
+    "totalTrades": "Total trades",
+    "bestTrade": "Best trade",
+    "worstTrade": "Worst trade",
+    "winRate": "Win rate",
+    "totalPnl": "Total P&L",
+    "exportCsv": "Export CSV",
+    "exportPdf": "Export PDF",
+    "dateRange": "Date range",
+    "from": "From",
+    "to": "To",
+    "apply": "Apply",
+    "loading": "Loading...",
+    "loadError": "Failed to load analytics. Sign in and check the backend.",
+    "invalidDateRange": "The start date must be before or equal to the end date.",
+    "exportError": "Export failed. Try again after signing in.",
+    "allTime": "All time",
+    "last7Days": "Last 7 days",
+    "last30Days": "Last 30 days",
+    "last90Days": "Last 90 days",
+    "noTrades": "No trades in this period",
+    "noSnapshots": "No snapshot data yet. It will appear after the first daily snapshot runs.",
+    "noHoldings": "No holdings yet. Place trades to see allocation.",
+    "colDate": "Date",
+    "colSymbol": "Symbol",
+    "colType": "Type",
+    "colQty": "Qty",
+    "colPrice": "Price",
+    "colTotal": "Total"
+  },
+  "settings": {
+    "title": "Settings",
+    "security": "Security",
+    "privacy": "Privacy & GDPR",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "changePassword": "Change password",
+    "changingPassword": "Changing password...",
+    "passwordChanged": "Password changed",
+    "passwordRequired": "Both password fields are required.",
+    "passwordTooShort": "Password must be at least 8 characters.",
+    "passwordSameAsOld": "New password must be different from the current one.",
+    "passwordChangeFailed": "Could not change password.",
+    "twoFactorTitle": "Two-factor authentication",
+    "twoFactorDesc": "Add an extra layer of security to your account.",
+    "twoFactorOn": "2FA is enabled",
+    "twoFactorOff": "2FA is disabled",
+    "twoFactorEnableButton": "Enable 2FA",
+    "twoFactorDisableButton": "Disable 2FA",
+    "twoFactorLoading": "Loading...",
+    "twoFactorSetupFailed": "Could not start 2FA setup.",
+    "twoFactorScanPrompt": "Scan this QR code with your authenticator app.",
+    "twoFactorManualEntry": "Or enter this code manually",
+    "twoFactorCodePlaceholder": "6-digit code",
+    "twoFactorCodeInvalid": "Enter a valid 6-digit code.",
+    "twoFactorConfirmButton": "Confirm",
+    "twoFactorVerifyFailed": "Could not verify code.",
+    "twoFactorDisablePrompt": "Enter your 2FA code to disable it.",
+    "twoFactorDisableConfirmButton": "Confirm disable",
+    "twoFactorDisableFailed": "Could not disable 2FA."
+  },
+  "friends": {
+    "title": "Friends",
+    "addFriend": "Add friend",
+    "message": "Message",
+    "removeFriend": "Remove friend",
+    "pending": "Pending",
+    "accept": "Accept",
+    "decline": "Decline",
+    "online": "Online",
+    "offline": "Offline",
+    "searchUsers": "Search users...",
+    "noFriends": "No friends yet. Find people in Search and send a request.",
+    "yourFriends": "Your friends",
+    "requestSent": "Request sent",
+    "incomingRequests": "Incoming requests",
+    "outgoingRequests": "Outgoing requests",
+    "cancelRequest": "Cancel request",
+    "loadFailed": "Could not load this. Try again.",
+    "actionFailed": "Something went wrong. Please try again.",
+    "removeConfirm": "Remove {{name}} from your friends?",
+    "removed": "{{name}} was removed from your friends"
+  },
+  "chat": {
+    "title": "Messages",
+    "newMessage": "New message",
+    "messagePlaceholder": "Type a message...",
+    "send": "Send",
+    "conversations": "Conversations",
+    "noConversations": "No conversations yet",
+    "noFriendsToMessage": "Add a friend to start a conversation.",
+    "selectConversation": "Select a conversation to start chatting.",
+    "noMessagesYet": "No messages yet. Say hello!",
+    "sendFailed": "Message failed to send. Try again.",
+    "startChat": "Start a conversation",
+    "online": "Online",
+    "lastSeen": "Last seen {{time}}",
+    "backToConversations": "Back to conversations",
+    "notFriends": "You can only message your friends. Send a friend request first.",
+    "tooLong": "Messages can be at most {{max}} characters."
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "rank": "Rank",
+    "player": "Player",
+    "portfolioValue": "Portfolio value",
+    "pnlPercent": "P&L %",
+    "trades": "Trades",
+    "you": "You",
+    "empty": "No traders yet.",
+    "loadFailed": "Could not load the leaderboard. Try again."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all as read",
+    "noNotifications": "No notifications",
+    "orderFilled": "Your {{side}} order for {{symbol}} was filled",
+    "friendRequest": "{{name}} sent you a friend request",
+    "newMessage": "New message from {{name}}",
+    "sides": {
+      "BUY": "buy",
+      "SELL": "sell"
+    },
+    "types": {
+      "avatar_updated": {
+        "title": "Profile updated",
+        "body": "Your avatar was updated."
+      },
+      "deposit": {
+        "title": "Deposit successful",
+        "body": "Your account was credited {{amount}}.",
+        "bodyGeneric": "Your account was credited."
+      },
+      "friend_removed": {
+        "title": "Friend removed",
+        "body": "A friend removed you from their friends list."
+      },
+      "friend_request": {
+        "title": "New friend request",
+        "body": "Someone wants to add you as a friend."
+      },
+      "friend_request_accepted": {
+        "title": "Friend request accepted",
+        "body": "Your friend request was accepted."
+      },
+      "friend_request_declined": {
+        "title": "Friend request declined",
+        "body": "Your friend request was declined."
+      },
+      "message": {
+        "title": "New message"
+      },
+      "order_cancelled": {
+        "title": "Order cancelled",
+        "body": "Your {{side}} order for {{quantity}} {{symbol}} was cancelled.",
+        "bodyGeneric": "One of your orders was cancelled."
+      },
+      "order_filled": {
+        "title": "Order filled",
+        "body": "Your {{side}} order for {{quantity}} {{symbol}} was filled at {{price}}.",
+        "bodyGeneric": "One of your orders was filled."
+      },
+      "order_placed": {
+        "title": "Limit order placed",
+        "body": "Your limit {{side}} order for {{quantity}} {{symbol}} at {{price}} is pending.",
+        "bodyGeneric": "Your limit order is pending until the target price is reached."
+      },
+      "password_changed": {
+        "title": "Password updated",
+        "body": "Your account password was changed."
+      },
+      "profile_updated": {
+        "title": "Profile updated",
+        "body": "Your profile information was updated."
+      },
+      "two_factor_disabled": {
+        "title": "Two-factor authentication disabled",
+        "body": "2FA was turned off for your account."
+      },
+      "two_factor_enabled": {
+        "title": "Two-factor authentication enabled",
+        "body": "2FA is now required when you sign in."
+      }
+    }
+  },
+  "gdpr": {
+    "downloadData": "Download my data",
+    "downloadDataDesc": "Export all your personal data as a JSON file",
+    "downloadButton": "Download data",
+    "downloading": "Downloading...",
+    "downloadFailed": "Could not export your data.",
+    "deleteAccount": "Delete account",
+    "deleteAccountDesc": "Permanently delete your account and all associated data. This action cannot be undone.",
+    "deleteButton": "Delete my account",
+    "deleteConfirmPrompt": "Enter your password to confirm account deletion.",
+    "deleteConfirmButton": "Permanently delete account",
+    "deleting": "Deleting...",
+    "deleteFailed": "Could not delete your account.",
+    "passwordRequired": "Password is required.",
+    "cancel": "Cancel"
+  },
+  "index": {
+    "tagline": "Simulated trading with real market data and no real money."
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "lastUpdated": "Last updated",
+    "section1": {
+      "heading": "1. Who we are",
+      "body": "PaperTrade is a team academic project (ft_transcendence). It provides a web application for simulated trading with market-like data. PaperTrade is not a licensed broker, bank, or financial advisor."
+    },
+    "section2": {
+      "heading": "2. Data we collect",
+      "intro": "Depending on how you use the service, we may store:",
+      "items": [
+        "Account data: email, username, display name, avatar, language preference",
+        "Authentication data: password hash (never plaintext), optional OAuth identifiers, optional 2FA secrets",
+        "Application data: balance/holdings, orders, portfolio snapshots, messages, friend relationships, notifications",
+        "Technical data: online status / last seen, and standard server logs needed to operate the app"
+      ],
+      "outro": "We do not intentionally collect payment card numbers or government ID documents. There is no real money on the platform."
+    },
+    "section3": {
+      "heading": "3. How we use data",
+      "items": [
+        "To create and secure your account",
+        "To run simulated trading, social, and analytics features",
+        "To show online status to friends when that feature is enabled",
+        "To improve reliability and fix bugs",
+        "To comply with evaluation / academic requirements for this project"
+      ]
+    },
+    "section4": {
+      "heading": "4. Where data is stored",
+      "body": "Application data is stored in the project database (PostgreSQL) operated by the team via Docker for local and evaluation environments. Secrets (for example JWT signing keys) are kept in environment configuration, not in the public repository."
+    },
+    "section5": {
+      "heading": "5. Sharing",
+      "body": "We do not sell personal data. Data may be processed by team members for development and peer evaluation. External market-data providers may be queried for public price information; those requests should not include your password or private messages."
+    },
+    "section6": {
+      "heading": "6. Your rights (GDPR-style)",
+      "intro": "Subject to what the app implements at evaluation time, you may:",
+      "items": [
+        "Access and download your personal data (Settings → Download my data)",
+        "Update profile information",
+        "Delete your account and associated application data (Settings → Delete account)"
+      ],
+      "outro": "Because this is an academic deployment, retention is limited to the life of the project environment unless the team resets the database earlier."
+    },
+    "section7": {
+      "heading": "7. Cookies and sessions",
+      "body": "Authentication may use HTTP-only cookies and/or tokens stored by the browser to keep you signed in. These are used for security and session continuity, not for third-party advertising."
+    },
+    "section8": {
+      "heading": "8. Contact",
+      "body": "For privacy questions about this academic project, contact the PaperTrade team members listed in the project README."
+    }
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "lastUpdated": "Last updated",
+    "section1": {
+      "heading": "1. Acceptance",
+      "body": "By creating an account or using PaperTrade, you agree to these Terms of Service. If you do not agree, do not use the application."
+    },
+    "section2": {
+      "heading": "2. Nature of the service",
+      "body1": "PaperTrade is a simulated trading platform built for an academic group project. Market prices may be delayed, incomplete, or approximated. Nothing in PaperTrade is an offer to buy or sell real securities, crypto-assets, or other financial instruments.",
+      "body2": "No real money is deposited, withdrawn, or settled through this application. Virtual balances and holdings have no cash value."
+    },
+    "section3": {
+      "heading": "3. Eligibility and accounts",
+      "items": [
+        "You must provide accurate registration information",
+        "You are responsible for keeping your credentials confidential",
+        "One person should not abuse multiple accounts to disrupt the platform",
+        "We may disable accounts that break these terms or harm other users"
+      ]
+    },
+    "section4": {
+      "heading": "4. Acceptable use",
+      "intro": "You agree not to:",
+      "items": [
+        "Attempt to break authentication, inject malicious input, or attack the service",
+        "Harass other users via chat, profiles, or other social features",
+        "Scrape or overload the service in a way that degrades availability",
+        "Present PaperTrade as a real brokerage or investment product"
+      ]
+    },
+    "section5": {
+      "heading": "5. No financial advice",
+      "body": "Content, charts, leaderboards, and analytics are for educational and entertainment purposes only. They are not investment, tax, or legal advice. Do not make real-world financial decisions based on PaperTrade."
+    },
+    "section6": {
+      "heading": "6. Availability",
+      "body": "The service may be unavailable during development, evaluation, or when the team resets environments. Features may change without notice as the project evolves."
+    },
+    "section7": {
+      "heading": "7. Limitation of liability",
+      "body": "To the maximum extent permitted by applicable law, the PaperTrade team provides the service \"as is\" without warranties of any kind, and is not liable for losses arising from use of the simulated platform, including loss of virtual balances, data loss after environment resets, or reliance on displayed prices."
+    },
+    "section8": {
+      "heading": "8. Privacy",
+      "before": "Personal data handling is described in our",
+      "after": "."
+    },
+    "section9": {
+      "heading": "9. Changes",
+      "body": "We may update these terms as the project develops. The \"Last updated\" date at the top of this page reflects the latest revision for evaluation purposes."
+    }
+  },
+  "notFound": {
+    "title": "404",
+    "message": "Oops! Page not found",
+    "returnHome": "Return to Home"
+  },
+  "assetDetails": {
+    "title": "Asset Details",
+    "historyUnavailable": "Price history isn't available for this asset.",
+    "yourPosition": "Your Position",
+    "back": "Go back to the markets list",
+    "high24h": "24h High",
+    "low24h": "24h Low",
+    "rangeDays": "{{count}}D"
+  },
+  "footer": {
+    "simulatedOnly": "simulated trading only"
+  },
+  "errors": {
+    "analytics": {
+      "invalidDate": "Invalid date.",
+      "invalidRange": "The start date must be before or equal to the end date."
+    },
+    "assets": {
+      "invalidDays": "Invalid number of days.",
+      "invalidLimit": "Invalid page size.",
+      "invalidPage": "Invalid page number.",
+      "notFound": "This asset does not exist."
+    },
+    "avatar": {
+      "invalidType": "Please choose a JPEG, PNG, GIF or WebP image.",
+      "noFile": "Please choose an image to upload."
+    },
+    "common": {
+      "conflict": "This conflicts with existing data.",
+      "generic": "Something went wrong. Please try again.",
+      "internal": "A server error occurred. Please try again later.",
+      "invalidId": "Invalid identifier.",
+      "invalidInput": "Invalid input.",
+      "invalidLimit": "Invalid page size.",
+      "invalidPage": "Invalid page number.",
+      "invalidReference": "This refers to something that no longer exists.",
+      "notFound": "Not found.",
+      "tooManyRequests": "Too many requests. Please wait a moment and try again.",
+      "unauthenticated": "Please sign in to continue.",
+      "userNotFound": "User not found.",
+      "valueOutOfRange": "This value is out of range."
+    },
+    "deposit": {
+      "invalidAmount": "Enter a valid amount.",
+      "tooLarge": "The maximum deposit is $1,000,000.",
+      "tooPrecise": "Use at most 2 decimals.",
+      "tooSmall": "The minimum deposit is $1."
+    },
+    "friends": {
+      "alreadyExists": "A friend request between you already exists.",
+      "cannotFriendSelf": "You can’t add yourself as a friend.",
+      "notAddressedToYou": "This friend request isn’t addressed to you.",
+      "notFound": "Friendship not found.",
+      "notParticipant": "You are not part of this friendship.",
+      "notPending": "This friend request was already handled.",
+      "requestNotFound": "Friend request not found."
+    },
+    "gdpr": {
+      "invalidPassword": "Incorrect password.",
+      "noPasswordSet": "This account has no password (OAuth-only)."
+    },
+    "messages": {
+      "cannotMessageSelf": "You can’t message yourself.",
+      "empty": "The message is empty.",
+      "invalidContent": "Invalid message content.",
+      "notFriends": "You can only message your friends.",
+      "sendFailed": "Message failed to send. Try again.",
+      "tooLong": "Messages can be at most 2000 characters."
+    },
+    "notifications": {
+      "forbidden": "This notification isn’t yours.",
+      "notFound": "Notification not found."
+    },
+    "orders": {
+      "assetNotFound": "This asset does not exist.",
+      "cannotCancel": "This order can no longer be cancelled.",
+      "holdingTooLarge": "This position would exceed the maximum allowed size.",
+      "insufficientBalance": "Insufficient balance.",
+      "insufficientHoldings": "You don’t hold enough of this asset.",
+      "invalidAsset": "Invalid asset.",
+      "invalidExecutionType": "Invalid order type.",
+      "invalidPrice": "Enter a valid price.",
+      "invalidQuantity": "Enter a valid quantity.",
+      "invalidStatus": "Invalid order status.",
+      "invalidType": "Invalid order side.",
+      "priceTooLarge": "The price is too large.",
+      "priceTooPrecise": "The price has too many decimals.",
+      "quantityTooLarge": "The quantity is too large.",
+      "quantityTooPrecise": "The quantity has too many decimals (max 8).",
+      "totalTooLarge": "The order total is too large.",
+      "totalTooSmall": "The order total is too small."
+    },
+    "users": {
+      "displayNameTooLong": "Display name must be at most 100 characters.",
+      "invalidDisplayName": "Invalid display name.",
+      "invalidLanguage": "Invalid language.",
+      "invalidQuery": "Invalid search.",
+      "invalidUsername": "Invalid username.",
+      "queryLength": "Search must be 1 to 50 characters.",
+      "usernameChars": "Username can only contain letters, numbers, underscores, and hyphens.",
+      "usernameLength": "Username must be 3 to 50 characters.",
+      "usernameTaken": "This username is already taken."
+    }
+  }
+}

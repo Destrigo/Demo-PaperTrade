@@ -1,0 +1,723 @@
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { QRCodeSVG } from 'qrcode.react';
+import { useAuth } from '../auth/useAuth';
+import { api } from '../api/api';
+import { useToast } from '../toast/ToastContext';
+import { apiErrorMessage } from '../utils/apiError';
+import { formatCurrency, formatDateTime } from '../utils/format';
+import {
+  DEPOSIT_MAX,
+  PASSWORD_MAX,
+  PASSWORD_MIN,
+  depositErrorKey,
+  passwordPolicyErrorKey,
+} from '../utils/validation';
+
+const API = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
+const DEFAULT_AVATAR = 'https://www.gravatar.com/avatar/?d=mp';
+
+export default function Settings() {
+  const { t } = useTranslation();
+
+  const { user, loading, refreshUser } = useAuth();
+  const { showToast } = useToast();
+
+  const [depositAmount, setDepositAmount] = useState('');
+  const [depositLoading, setDepositLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [avatarError, setAvatarError] = useState('');
+  const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [username, setUsername] = useState('');
+  const [displayName, setDisplayName] = useState('');
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [saveError, setSaveError] = useState('');
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  const [logoutLoading, setLogoutLoading] = useState(false);
+
+  // --- Password change (independent from the profile-fields form) ---
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
+
+  // --- 2FA (also independent from the other forms) ---
+  const [twoFAStep, setTwoFAStep] = useState<'idle' | 'setup' | 'disable'>('idle');
+  const [twoFASecret, setTwoFASecret] = useState('');
+  const [twoFAUri, setTwoFAUri] = useState('');
+  const [twoFACode, setTwoFACode] = useState('');
+  const [twoFALoading, setTwoFALoading] = useState(false);
+  const [twoFAError, setTwoFAError] = useState('');
+
+  // --- GDPR ---
+  const [gdprDownloading, setGdprDownloading] = useState(false);
+  const [gdprError, setGdprError] = useState('');
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      setUsername(user.username);
+      setDisplayName(user.displayName ?? '');
+    }
+  }, [user]);
+
+  const handleDeposit = async () => {
+    setError('');
+    const invalidKey = depositErrorKey(depositAmount);
+    if (invalidKey) {
+      setError(t(invalidKey, { max: formatCurrency(DEPOSIT_MAX) }));
+      return;
+    }
+    const amount = Number(depositAmount);
+    try {
+      setDepositLoading(true);
+      await api.post('/users/deposit', { amount });
+      await refreshUser();
+      setDepositAmount('');
+      showToast(t('profile.depositSuccess', { amount: formatCurrency(amount) }), 'success');
+    } catch (err: unknown) {
+      setError(apiErrorMessage(err, t, 'profile.depositFailed'));
+    } finally {
+      setDepositLoading(false);
+    }
+  };
+
+  const handleAvatarClick = () => {
+    if (avatarUploading) return;
+    fileInputRef.current?.click();
+  };
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+
+    setAvatarError('');
+
+    if (!file.type.startsWith('image/')) {
+      setAvatarError(t('profile.avatarInvalidType'));
+      return;
+    }
+    const MAX_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      setAvatarError(t('profile.avatarTooLarge'));
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    try {
+      setAvatarUploading(true);
+      // Let axios set the multipart boundary itself — do not set
+      // Content-Type manually here, or the boundary will be missing.
+      await api.put('/users/me/avatar', formData);
+      await refreshUser();
+    } catch (err: unknown) {
+      setAvatarError(apiErrorMessage(err, t, 'profile.avatarUploadFailed'));
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
+
+  // Only touches username / displayName
+  const handleSave = async () => {
+    setSaveError('');
+    setSaveSuccess(false);
+    const trimmedUsername = username.trim();
+    if (!trimmedUsername) {
+      setSaveError(t('profile.usernameRequired'));
+      return;
+    }
+    if (trimmedUsername.length < 3) {
+      setSaveError(t('auth.validation.usernameTooShort'));
+      return;
+    }
+    if (trimmedUsername.length > 50) {
+      setSaveError(t('auth.validation.usernameTooLong'));
+      return;
+    }
+    if (!/^[a-zA-Z0-9_-]+$/.test(trimmedUsername)) {
+      setSaveError(t('auth.validation.usernameInvalidChars'));
+      return;
+    }
+    try {
+      setSaveLoading(true);
+      await api.put('/users/me', {
+        username: username.trim(),
+        displayName: displayName.trim() || null,
+      });
+      await refreshUser();
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 2500);
+    } catch (err: unknown) {
+      setSaveError(apiErrorMessage(err, t, 'profile.saveFailed'));
+    } finally {
+      setSaveLoading(false);
+    }
+  };
+
+  // Only touches password fields
+  const handleChangePassword = async () => {
+    setPasswordError('');
+    setPasswordSuccess(false);
+
+    if (!currentPassword || !newPassword) {
+      setPasswordError(t('settings.passwordRequired'));
+      return;
+    }
+    const policyError = passwordPolicyErrorKey(newPassword);
+    if (policyError) {
+      setPasswordError(t(policyError));
+      return;
+    }
+    if (newPassword === currentPassword) {
+      setPasswordError(t('settings.passwordSameAsOld'));
+      return;
+    }
+
+    try {
+      setPasswordLoading(true);
+      await api.post('/auth/change-password', {
+        currentPassword,
+        newPassword,
+      });
+      setCurrentPassword('');
+      setNewPassword('');
+      setPasswordSuccess(true);
+      setTimeout(() => setPasswordSuccess(false), 2500);
+    } catch (err: unknown) {
+      setPasswordError(apiErrorMessage(err, t, 'settings.passwordChangeFailed'));
+    } finally {
+      setPasswordLoading(false);
+    }
+  };
+
+  // --- 2FA handlers ---
+
+  const handleStart2FASetup = async () => {
+    setTwoFAError('');
+    try {
+      setTwoFALoading(true);
+      const res = await api.post('/auth/2fa/setup');
+      setTwoFASecret(res.data.secret);
+      setTwoFAUri(res.data.otpauthUrl);
+      setTwoFAStep('setup');
+    } catch (err: unknown) {
+      setTwoFAError(apiErrorMessage(err, t, 'settings.twoFactorSetupFailed'));
+    } finally {
+      setTwoFALoading(false);
+    }
+  };
+
+  const handleConfirm2FA = async () => {
+    setTwoFAError('');
+    if (twoFACode.length !== 6) {
+      setTwoFAError(t('settings.twoFactorCodeInvalid'));
+      return;
+    }
+    try {
+      setTwoFALoading(true);
+      await api.post('/auth/2fa/verify', { code: twoFACode });
+      await refreshUser();
+      setTwoFAStep('idle');
+      setTwoFACode('');
+      setTwoFASecret('');
+      setTwoFAUri('');
+    } catch (err: unknown) {
+      setTwoFAError(apiErrorMessage(err, t, 'settings.twoFactorVerifyFailed'));
+    } finally {
+      setTwoFALoading(false);
+    }
+  };
+
+  const handleDisable2FA = async () => {
+    setTwoFAError('');
+    if (twoFACode.length !== 6) {
+      setTwoFAError(t('settings.twoFactorCodeInvalid'));
+      return;
+    }
+    try {
+      setTwoFALoading(true);
+      await api.post('/auth/2fa/disable', { code: twoFACode });
+      await refreshUser();
+      setTwoFAStep('idle');
+      setTwoFACode('');
+    } catch (err: unknown) {
+      setTwoFAError(apiErrorMessage(err, t, 'settings.twoFactorDisableFailed'));
+    } finally {
+      setTwoFALoading(false);
+    }
+  };
+
+  const handleCancel2FA = () => {
+    setTwoFAStep('idle');
+    setTwoFACode('');
+    setTwoFASecret('');
+    setTwoFAUri('');
+    setTwoFAError('');
+  };
+
+  const handleLogout = async () => {
+    try {
+      setLogoutLoading(true);
+      await api.post('/auth/logout');
+    } catch {
+      // logout is best-effort client-side; fall through to redirect either way
+    } finally {
+      await refreshUser();
+      setLogoutLoading(false);
+      navigate('/login');
+    }
+  };
+
+  const handleDownloadData = async () => {
+    setGdprError('');
+    try {
+      setGdprDownloading(true);
+      const res = await api.get('/gdpr/export', { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'my-data.json';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err: unknown) {
+      setGdprError(apiErrorMessage(err, t, 'gdpr.downloadFailed'));
+    } finally {
+      setGdprDownloading(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!confirmingDelete) {
+      setConfirmingDelete(true);
+      return;
+    }
+    setDeleteError('');
+    if (!deletePassword) {
+      setDeleteError(t('gdpr.passwordRequired'));
+      return;
+    }
+    try {
+      setDeleteLoading(true);
+      await api.delete('/gdpr/delete-account', { data: { password: deletePassword } });
+      await refreshUser();
+      navigate('/login');
+    } catch (err: unknown) {
+      setDeleteError(apiErrorMessage(err, t, 'gdpr.deleteFailed'));
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-muted">
+        <p className="text-sm text-muted-foreground">{t('profile.loading')}</p>
+      </div>
+    );
+  }
+
+  if (!user) return null;
+
+  const avatar = user.avatarUrl ? `${API}${user.avatarUrl}` : DEFAULT_AVATAR;
+  const balance = Number(user.balance ?? 0);
+  const hasChanges =
+    username.trim() !== user.username ||
+    (displayName.trim() || null) !== (user.displayName ?? null);
+
+  return (
+    <div className="p-6">
+      <h1 className="mb-6 text-2xl font-bold">{t('settings.title')}</h1>
+
+      {/* Profile section */}
+      <section className="mb-6 rounded-lg border border-border bg-card p-4">
+        <div className="grid gap-8 md:grid-cols-2">
+          <div>
+            <div className="mb-6 flex items-center gap-4">
+              <button
+                type="button"
+                onClick={handleAvatarClick}
+                disabled={avatarUploading}
+                className="group relative h-20 w-20 shrink-0 rounded-full focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed"
+                aria-label={t('profile.changeAvatar')}
+              >
+                <img
+                  src={avatar}
+                  alt={t('profile.avatarAlt')}
+                  className="h-20 w-20 rounded-full object-cover"
+                />
+                <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/0 text-[10px] font-medium text-transparent transition-colors group-hover:bg-black/40 group-hover:text-white">
+                  {avatarUploading ? t('profile.uploading') : t('profile.changeAvatar')}
+                </span>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarChange}
+                  className="hidden"
+                />
+              </button>
+              <div className="min-w-0">
+                <h2 className="break-words text-lg font-semibold [overflow-wrap:anywhere]">
+                  {user.displayName || user.username}
+                </h2>
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <span
+                    className={`inline-block h-2 w-2 rounded-full ${
+                      user.isOnline ? 'bg-green-500' : 'bg-gray-400'
+                    }`}
+                  />
+                  {user.isOnline ? t('profile.online') : t('profile.offline')}
+                </div>
+              </div>
+            </div>
+
+            {avatarError && (
+              <p className="-mt-4 mb-4 text-sm text-destructive">{avatarError}</p>
+            )}
+
+            <div className="space-y-2 border-t border-input pt-4 text-sm">
+              <p>
+                <span className="font-medium">{t('profile.email')}:</span>{' '}
+                <span className="break-all text-muted-foreground">{user.email}</span>
+              </p>
+              <p>
+                <span className="font-medium">{t('profile.balance')}:</span>{' '}
+                <span className="text-muted-foreground">{formatCurrency(balance)}</span>
+              </p>
+              {user.lastSeen && (
+                <p>
+                  <span className="font-medium">{t('profile.lastSeen')}:</span>{' '}
+                  <span className="text-muted-foreground">
+                    {formatDateTime(user.lastSeen)}
+                  </span>
+                </p>
+              )}
+            </div>
+
+            <div className="mt-6 border-t border-input pt-4">
+              <label className="mb-1 block text-sm font-medium">
+                {t('profile.depositLabel')}
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  min={1}
+                  max={DEPOSIT_MAX}
+                  step="0.01"
+                  value={depositAmount}
+                  onChange={(e) => setDepositAmount(e.target.value)}
+                  placeholder={t('profile.depositPlaceholder')}
+                  className="w-full rounded border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+                <button
+                  onClick={handleDeposit}
+                  disabled={depositLoading}
+                  className="whitespace-nowrap rounded bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {depositLoading ? t('profile.depositing') : t('profile.depositButton')}
+                </button>
+              </div>
+              {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
+            </div>
+          </div>
+
+          <div className="flex flex-col">
+            <div className="space-y-4">
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  {t('profile.username')}
+                </label>
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  minLength={3}
+                  maxLength={50}
+                  className="w-full rounded border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  {t('profile.displayName')}
+                </label>
+                <input
+                  type="text"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  maxLength={100}
+                  placeholder={t('profile.displayNamePlaceholder')}
+                  className="w-full rounded border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+
+              {saveError && <p className="text-sm text-destructive">{saveError}</p>}
+              {saveSuccess && (
+                <p className="text-sm text-green-600">{t('profile.saved')}</p>
+              )}
+
+              <button
+                onClick={handleSave}
+                disabled={saveLoading || !hasChanges}
+                className="w-full rounded bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {saveLoading ? t('profile.saving') : t('profile.saveButton')}
+              </button>
+            </div>
+
+            <div className="mt-auto border-t border-input pt-4 md:mt-6">
+              <button
+                onClick={handleLogout}
+                disabled={logoutLoading}
+                className="w-full rounded border border-input px-4 py-2 text-sm font-medium text-destructive hover:bg-destructive/10 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {logoutLoading ? t('profile.loggingOut') : t('profile.logoutButton')}
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Security section — password change and 2FA are independent of the profile form */}
+      <section className="mb-6 rounded-lg border border-border bg-card p-4">
+        <h2 className="mb-4 text-lg font-semibold">{t('settings.security')}</h2>
+        <div className="space-y-4">
+          <div>
+            <label className="mb-1 block text-sm font-medium">
+              {t('settings.currentPassword')}
+            </label>
+            <input
+              type="password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              autoComplete="current-password"
+              className="w-full rounded border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium">
+              {t('settings.newPassword')}
+            </label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              autoComplete="new-password"
+              minLength={PASSWORD_MIN}
+              maxLength={PASSWORD_MAX}
+              className="w-full rounded border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+            <p className="mt-1 text-xs text-muted-foreground">{t('auth.passwordHint')}</p>
+          </div>
+
+          {passwordError && (
+            <p className="text-sm text-destructive">{passwordError}</p>
+          )}
+          {passwordSuccess && (
+            <p className="text-sm text-green-600">{t('settings.passwordChanged')}</p>
+          )}
+
+          <button
+            onClick={handleChangePassword}
+            disabled={passwordLoading || !currentPassword || !newPassword}
+            className="rounded bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {passwordLoading ? t('settings.changingPassword') : t('settings.changePassword')}
+          </button>
+        </div>
+
+        {/* 2FA */}
+        <hr className="my-6 border-border" />
+
+        <div>
+          <h3 className="mb-1 text-sm font-semibold">{t('settings.twoFactorTitle')}</h3>
+          <p className="mb-3 text-xs text-muted-foreground">{t('settings.twoFactorDesc')}</p>
+
+          {twoFAStep === 'idle' && (
+            <div className="flex flex-wrap items-center gap-3">
+              <span
+                className={`inline-block h-2 w-2 rounded-full ${
+                  user.twoFactorEnabled ? 'bg-green-500' : 'bg-gray-400'
+                }`}
+              />
+              <span className="text-sm">
+                {user.twoFactorEnabled
+                  ? t('settings.twoFactorOn')
+                  : t('settings.twoFactorOff')}
+              </span>
+              {user.twoFactorEnabled ? (
+                <button
+                  onClick={() => setTwoFAStep('disable')}
+                  className="ml-auto rounded border border-destructive px-3 py-1.5 text-sm text-destructive hover:bg-destructive/10"
+                >
+                  {t('settings.twoFactorDisableButton')}
+                </button>
+              ) : (
+                <button
+                  onClick={handleStart2FASetup}
+                  disabled={twoFALoading}
+                  className="ml-auto rounded bg-primary px-3 py-1.5 text-sm text-primary-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {twoFALoading
+                    ? t('settings.twoFactorLoading')
+                    : t('settings.twoFactorEnableButton')}
+                </button>
+              )}
+            </div>
+          )}
+
+          {twoFAStep === 'setup' && (
+            <div className="space-y-3 rounded border border-input p-4">
+              <p className="text-sm">{t('settings.twoFactorScanPrompt')}</p>
+              <div className="flex justify-center rounded bg-white p-3">
+                <QRCodeSVG value={twoFAUri} size={180} />
+              </div>
+              <p className="break-all text-center text-xs text-muted-foreground">
+                {t('settings.twoFactorManualEntry')}: <code>{twoFASecret}</code>
+              </p>
+              <input
+                type="text"
+                inputMode="numeric"
+                maxLength={6}
+                value={twoFACode}
+                onChange={(e) => setTwoFACode(e.target.value.replace(/\D/g, ''))}
+                placeholder={t('settings.twoFactorCodePlaceholder')}
+                className="w-full rounded border border-input bg-background px-3 py-2 text-center text-sm tracking-widest focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+              {twoFAError && <p className="text-sm text-destructive">{twoFAError}</p>}
+              <div className="flex gap-2">
+                <button
+                  onClick={handleConfirm2FA}
+                  disabled={twoFALoading}
+                  className="rounded bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {twoFALoading
+                    ? t('settings.twoFactorLoading')
+                    : t('settings.twoFactorConfirmButton')}
+                </button>
+                <button
+                  onClick={handleCancel2FA}
+                  className="rounded border border-input px-4 py-2 text-sm hover:bg-accent"
+                >
+                  {t('gdpr.cancel')}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {twoFAStep === 'disable' && (
+            <div className="space-y-3 rounded border border-input p-4">
+              <p className="text-sm">{t('settings.twoFactorDisablePrompt')}</p>
+              <input
+                type="text"
+                inputMode="numeric"
+                maxLength={6}
+                value={twoFACode}
+                onChange={(e) => setTwoFACode(e.target.value.replace(/\D/g, ''))}
+                placeholder={t('settings.twoFactorCodePlaceholder')}
+                className="w-full rounded border border-input bg-background px-3 py-2 text-center text-sm tracking-widest focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+              {twoFAError && <p className="text-sm text-destructive">{twoFAError}</p>}
+              <div className="flex gap-2">
+                <button
+                  onClick={handleDisable2FA}
+                  disabled={twoFALoading}
+                  className="rounded border border-destructive px-4 py-2 text-sm text-destructive hover:bg-destructive hover:text-destructive-foreground disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {twoFALoading
+                    ? t('settings.twoFactorLoading')
+                    : t('settings.twoFactorDisableConfirmButton')}
+                </button>
+                <button
+                  onClick={handleCancel2FA}
+                  className="rounded border border-input px-4 py-2 text-sm hover:bg-accent"
+                >
+                  {t('gdpr.cancel')}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* GDPR section */}
+      <section className="rounded-lg border border-border bg-card p-4">
+        <h2 className="mb-4 text-lg font-semibold">{t('settings.privacy')}</h2>
+        <div className="space-y-3">
+          <div>
+            <p className="text-sm font-medium">{t('gdpr.downloadData')}</p>
+            <p className="mb-2 text-xs text-muted-foreground">{t('gdpr.downloadDataDesc')}</p>
+            <button
+              onClick={handleDownloadData}
+              disabled={gdprDownloading}
+              className="rounded border border-border px-4 py-2 text-sm hover:bg-accent disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {gdprDownloading ? t('gdpr.downloading') : t('gdpr.downloadButton')}
+            </button>
+            {gdprError && <p className="mt-2 text-sm text-destructive">{gdprError}</p>}
+          </div>
+          <hr className="border-border" />
+          <div>
+            <p className="text-sm font-medium text-destructive">{t('gdpr.deleteAccount')}</p>
+            <p className="mb-2 text-xs text-muted-foreground">{t('gdpr.deleteAccountDesc')}</p>
+            {confirmingDelete && (
+              <div className="mb-2 space-y-2">
+                <p className="text-xs font-medium text-destructive">
+                  {t('gdpr.deleteConfirmPrompt')}
+                </p>
+                <input
+                  type="password"
+                  value={deletePassword}
+                  onChange={(e) => setDeletePassword(e.target.value)}
+                  autoComplete="current-password"
+                  placeholder={t('auth.password')}
+                  className="w-full rounded border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+            )}
+            <div className="flex gap-2">
+              <button
+                onClick={handleDeleteAccount}
+                disabled={deleteLoading}
+                className="rounded border border-destructive px-4 py-2 text-sm text-destructive hover:bg-destructive hover:text-destructive-foreground disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {deleteLoading
+                  ? t('gdpr.deleting')
+                  : confirmingDelete
+                  ? t('gdpr.deleteConfirmButton')
+                  : t('gdpr.deleteButton')}
+              </button>
+              {confirmingDelete && !deleteLoading && (
+                <button
+                  onClick={() => {
+                    setConfirmingDelete(false);
+                    setDeletePassword('');
+                    setDeleteError('');
+                  }}
+                  className="rounded border border-input px-4 py-2 text-sm hover:bg-accent"
+                >
+                  {t('gdpr.cancel')}
+                </button>
+              )}
+            </div>
+            {deleteError && <p className="mt-2 text-sm text-destructive">{deleteError}</p>}
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}

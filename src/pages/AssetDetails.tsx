@@ -1,0 +1,245 @@
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link, Navigate, useParams } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
+import type { Asset, Order, Portfolio, PricePoint } from '../types/types';
+import { fetchAssetBySymbol, fetchAssetHistory, fetchOrders, fetchPortfolio } from '../services/trading.service';
+import PriceChart from '../components/PriceChart';
+import OrderPanel from '../components/OrdersPanel';
+import {
+  EMPTY_VALUE,
+  formatCompactOrDash,
+  formatCurrency,
+  formatDate,
+  formatPercent,
+  formatPrice,
+  formatQuantity,
+  formatSignedCurrency,
+  pnlClass,
+} from '../utils/format';
+import { SIDE_LABEL_KEY } from '../utils/labels';
+import { apiErrorMessage } from '../utils/apiError';
+import { useLivePrice } from '../prices/useLivePrice';
+
+export default function AssetDetailsPage() {
+  const { t } = useTranslation();
+  const { symbol } = useParams<{ symbol: string }>();
+  const [asset, setAsset] = useState<Asset | null>(null);
+  const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
+  const [history, setHistory] = useState<PricePoint[]>([]);
+  const [assetOrders, setAssetOrders] = useState<Order[]>([]);
+  const [days, setDays] = useState(30);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (!symbol) return;
+    let cancelled = false;
+    setLoading(true);
+    setError('');
+    Promise.all([fetchAssetBySymbol(symbol), fetchAssetHistory(symbol, 90), fetchPortfolio()])
+      .then(([assetData, historyData, portfolioData]) => {
+        if (cancelled) return;
+        setAsset(assetData);
+        setHistory(historyData);
+        setPortfolio(portfolioData);
+      })
+      .catch((err: unknown) => {
+        if (!cancelled) setError(apiErrorMessage(err, t, 'trading.assetTable.errorLoad'));
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [symbol]);
+
+
+  useEffect(() => {
+    if (!asset) return;
+    fetchOrders({ assetId: asset.id })
+      .then(setAssetOrders)
+      .catch(() => setAssetOrders([]));
+  }, [asset?.id]);
+
+
+  const refreshAfterOrderChange = useCallback(() => {
+    fetchPortfolio().then(setPortfolio).catch(() => {});
+    if (asset) {
+      fetchOrders({ assetId: asset.id }).then(setAssetOrders).catch(() => {});
+    }
+  }, [asset]);
+
+  const visibleHistory = useMemo(() => {
+    if (history.length === 0) return history;
+    const cutoff = Math.floor(Date.now() / 1000) - days * 24 * 60 * 60;
+    return history.filter((point) => point.time >= cutoff);
+  }, [history, days]);
+
+  // Called unconditionally (before the early returns below) with safe
+  // fallbacks so the hooks-per-render count never changes once `asset` loads.
+  const { price, change24h, flash } = useLivePrice(
+    asset?.symbol ?? '',
+    asset?.currentPrice ?? 0,
+    asset?.change24h ?? 0,
+  );
+
+  if (!symbol) {
+    return <Navigate to="/markets" replace />;
+  }
+
+  if (loading) {
+    return (
+      <div className="animate-pulse p-6">
+        <div className="flex items-center gap-4">
+          <div className="h-10 w-10 rounded-full bg-muted" />
+          <div className="space-y-2">
+            <div className="h-5 w-32 rounded bg-muted" />
+            <div className="h-4 w-20 rounded bg-muted" />
+          </div>
+        </div>
+        <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_1fr]">
+          <div className="h-80 rounded-lg bg-muted" />
+          <div className="h-80 rounded-lg bg-muted" />
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !asset) return <div className="p-6 text-sm text-destructive">{error || t('trading.assetTable.errorLoad')}</div>;
+
+  const holding = portfolio?.holdings.find((h) => h.assetId === asset.id) ?? null;
+
+  const stats = [
+    { label: t('markets.volume'), value: formatCompactOrDash(asset.volume24h) },
+    { label: t('markets.marketCap'), value: formatCompactOrDash(asset.marketCap) },
+    { label: t('assetDetails.high24h'), value: asset.high24h ? formatPrice(asset.high24h) : EMPTY_VALUE },
+    { label: t('assetDetails.low24h'), value: asset.low24h ? formatPrice(asset.low24h) : EMPTY_VALUE },
+  ];
+
+  return (
+    <div className="p-6">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-2">
+        <h1 className="text-2xl font-bold">{t('assetDetails.title')}</h1>
+        <Link
+          to="/markets"
+          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          {t('assetDetails.back')}
+        </Link>
+      </div>
+
+      <div className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4 shadow-sm md:flex-row md:items-center md:justify-between">
+        <div className="flex min-w-0 items-center gap-4">
+          {asset.logoUrl && <img src={asset.logoUrl} alt={asset.symbol} className="h-10 w-10 shrink-0 rounded-full" />}
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+              <span className="text-xl font-bold">{asset.symbol}</span>
+              <span className="min-w-0 truncate text-sm text-muted-foreground">{asset.name}</span>
+              <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium uppercase text-muted-foreground">
+                {asset.type === 'CRYPTO' ? t('trading.assetTable.crypto') : t('trading.assetTable.stock')}
+              </span>
+            </div>
+            <div
+              className={`flex flex-wrap items-baseline gap-x-2 rounded font-mono transition-colors duration-500 ${
+                flash === 'up' ? 'bg-emerald-500/15' : ''
+              } ${flash === 'down' ? 'bg-destructive/15' : ''}`}
+            >
+              <span className="break-all text-2xl">{formatPrice(price)}</span>
+              <span className={`text-sm ${pnlClass(change24h)}`}>{formatPercent(change24h, { signed: true })}</span>
+            </div>
+          </div>
+        </div>
+
+        <dl className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm sm:grid-cols-4">
+          {stats.map((stat) => (
+            <div key={stat.label} className="min-w-0">
+              <dt className="text-xs uppercase tracking-wide text-muted-foreground">{stat.label}</dt>
+              <dd className="truncate font-mono">{stat.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+
+      <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_1fr]">
+        <div className="min-w-0 rounded-lg border border-border bg-card p-4 shadow-sm lg:col-start-1 lg:row-start-1">
+          <div className="mb-3 flex gap-2">
+            {[7, 30, 90].map((d) => (
+              <button
+                key={d}
+                onClick={() => setDays(d)}
+                className={`rounded px-2 py-1 text-xs font-medium ${
+                  days === d ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent'
+                }`}
+              >
+                {t('assetDetails.rangeDays', { count: d })}
+              </button>
+            ))}
+          </div>
+          <PriceChart data={visibleHistory} />
+        </div>
+
+        <div className="min-w-0 lg:col-start-2 lg:row-start-1">
+          <OrderPanel
+            asset={asset}
+            holding={holding}
+            balance={portfolio?.balance ?? 0}
+            onOrderPlaced={refreshAfterOrderChange}
+          />
+        </div>
+
+        {holding && (
+          <div className="self-start rounded-lg border border-border bg-card p-4 shadow-sm lg:col-start-1 lg:row-start-2">
+            <div className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              {t('assetDetails.yourPosition')}
+            </div>
+            <div className="flex items-center justify-between font-mono text-sm">
+              <span className="text-muted-foreground">{t('trading.holdingsTable.avg')}</span>
+              <span>{formatPrice(holding.avgBuyPrice)}</span>
+            </div>
+            <div className="mt-1 flex items-center justify-between font-mono text-sm">
+              <span className="text-muted-foreground">{formatQuantity(holding.quantity)} {asset.symbol}</span>
+              <span>{formatCurrency(holding.currentValue)}</span>
+            </div>
+            <div
+              className={`mt-1 text-right font-mono text-xs ${pnlClass(holding.pnl)}`}
+            >
+              {formatSignedCurrency(holding.pnl)} ({formatPercent(holding.pnlPercent, { signed: true })})
+            </div>
+          </div>
+        )}
+
+		{assetOrders.length > 0 && (
+		  <div className="rounded-lg border border-border bg-card shadow-sm lg:col-start-2 lg:row-start-2">
+            <div className="px-3 py-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              {t('trading.orderHistory')}
+            </div>
+            <div className="divide-y divide-border">
+              {assetOrders.slice(0, 5).map((order) => (
+                <div key={order.id} className="flex items-center justify-between gap-2 px-3 py-2.5 text-sm">
+                  <div>
+                    <span
+                      className={`text-xs font-semibold uppercase ${
+                        order.type === 'BUY' ? 'text-primary' : 'text-destructive'
+                      }`}
+                    >
+                      {t(SIDE_LABEL_KEY[order.type])}
+                    </span>{' '}
+                    <span className="font-mono">{formatQuantity(order.quantity)}</span>
+                  </div>
+                  <div className="text-right text-xs text-muted-foreground">
+                    <div>{formatPrice(order.price)}</div>
+                    <div>{formatDate(order.createdAt)}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+		)}
+
+      </div>
+    </div>
+  );
+}

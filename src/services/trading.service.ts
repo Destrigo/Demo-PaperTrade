@@ -1,0 +1,89 @@
+import { api } from '../api/api';
+import type {
+  Asset,
+  AssetListResponse,
+  CreateOrderPayload,
+  Order,
+  OrderStatus,
+  Portfolio,
+  PortfolioHistoryPoint,
+  PricePoint,
+} from '../types/types';
+
+export interface AssetQueryParams {
+  q?: string;
+  type?: 'CRYPTO' | 'STOCK';
+  sort?: 'price' | 'change' | 'name' | 'volume' | 'marketCap';
+  order?: 'asc' | 'desc';
+  page?: number;
+  limit?: number;
+}
+
+export interface OrdersQueryParams {
+  status?: OrderStatus;
+  type?: 'BUY' | 'SELL';
+  assetId?: string;
+}
+
+function normalizeAsset(raw: Asset): Asset {
+  return {
+    ...raw,
+    currentPrice: Number(raw.currentPrice),
+    change24h: Number(raw.change24h),
+    volume24h: Number(raw.volume24h),
+    marketCap: Number(raw.marketCap),
+    high24h: Number(raw.high24h),
+    low24h: Number(raw.low24h),
+  };
+}
+
+function normalizeOrder(raw: Order): Order {
+  return {
+    ...raw,
+    quantity: Number(raw.quantity),
+    price: Number(raw.price),
+    total: Number(raw.total),
+    asset: normalizeAsset(raw.asset),
+  };
+}
+
+export async function fetchAssets(params: AssetQueryParams): Promise<AssetListResponse> {
+  const { data } = await api.get<AssetListResponse>('/assets', { params });
+  return { ...data, data: data.data.map(normalizeAsset) };
+}
+
+export async function fetchAssetBySymbol(symbol: string): Promise<Asset> {
+  const { data } = await api.get<Asset>(`/assets/${symbol}`);
+  return normalizeAsset(data);
+}
+
+export async function fetchAssetHistory(symbol: string, days = 30): Promise<PricePoint[]> {
+  const { data } = await api.get<PricePoint[]>(`/assets/${symbol}/history`, { params: { days } });
+  return data;
+}
+
+export async function fetchPortfolio(): Promise<Portfolio> {
+  const { data } = await api.get<Portfolio>('/portfolio');
+  return data;
+}
+
+export async function fetchPortfolioHistory(): Promise<PortfolioHistoryPoint[]> {
+  // Reuses the existing analytics endpoint (same underlying data/shape)
+  // instead of a second route, since this is the only caller.
+  const { data } = await api.get<PortfolioHistoryPoint[]>('/analytics/portfolio');
+  return data;
+}
+
+export async function placeOrder(payload: CreateOrderPayload) {
+  const { data } = await api.post('/orders', payload);
+  return data;
+}
+
+export async function fetchOrders(params: OrdersQueryParams = {}): Promise<Order[]> {
+  const { data } = await api.get<Order[]>('/orders', { params });
+  return data.map(normalizeOrder);
+}
+
+export async function cancelOrder(orderId: string): Promise<void> {
+  await api.delete(`/orders/${orderId}`);
+}

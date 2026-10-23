@@ -1,0 +1,194 @@
+import { useEffect, useState } from 'react';
+import { useParams, useNavigate, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { ArrowLeft, UserPlus, MessageCircle, Loader2, Check } from 'lucide-react';
+import { getPublicProfile, type PublicProfile as PublicProfileType } from '../services/user.service';
+import { useAuth } from '../auth/useAuth';
+import { resolveAvatarUrl } from '../api/avatar';
+import { fetchFriends, fetchOutgoingFriendRequests, sendFriendRequest } from '../services/social.service';
+import { apiErrorMessage } from '../utils/apiError';
+import { formatDate, formatRelativeTime } from '../utils/format';
+
+export default function PublicProfile() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { user: currentUser } = useAuth();
+
+  const [profile, setProfile] = useState<PublicProfileType | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [requestSent, setRequestSent] = useState(false);
+  const [friendRequestError, setFriendRequestError] = useState('');
+  const [isFriend, setIsFriend] = useState(false);
+
+  const isSelf = !!currentUser && currentUser.id === id;
+
+  useEffect(() => {
+    if (!id || isSelf) return;
+    let cancelled = false;
+    setLoading(true);
+    setError(false);
+
+    fetchFriends()
+      .then((f) => {
+        if (!cancelled) setIsFriend(f.some((x) => x.id === id));
+      })
+      .catch(() => {});
+    fetchOutgoingFriendRequests()
+      .then((o) => {
+        if (!cancelled && o.some((r) => r.otherUser.id === id)) setRequestSent(true);
+      })
+      .catch(() => {});
+
+    getPublicProfile(id)
+      .then((data) => {
+        if (!cancelled) setProfile(data);
+      })
+      .catch(() => {
+        if (!cancelled) setError(true);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id, isSelf]);
+
+  if (isSelf) {
+    return <Navigate to="/settings" replace />;
+  }
+
+  const handleAddFriend = async () => {
+    if (!id || requestSent) return;
+    try {
+      await sendFriendRequest(id);
+      setRequestSent(true);
+    } catch (err: unknown) {
+      setFriendRequestError(apiErrorMessage(err, t, 'search.requestFailed'));
+      setTimeout(() => setFriendRequestError(''), 2500);
+    }
+  };
+
+  const handleMessage = () => {
+    if (id && isFriend) navigate(`/messages/${id}`);
+  };
+
+  const formatLastSeen = (iso: string | null) => {
+    if (!iso) return t('friends.offline');
+    return t('search.offlineSince', { time: formatRelativeTime(iso) ?? t('common.justNow') });
+  };
+
+  const formatJoined = (iso: string) => formatDate(iso, { year: 'numeric', month: 'long' });
+
+  const initials = (p: PublicProfileType) =>
+    (p.displayName || p.username).slice(0, 2).toUpperCase();
+
+  return (
+    <div className="mx-auto max-w-2xl px-4 py-8">
+      <button
+        onClick={() => navigate(-1)}
+        className="mb-6 flex items-center gap-1.5 text-sm font-medium text-slate-500 transition hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        {t('common.back')}
+      </button>
+
+      {loading && (
+        <div className="flex items-center justify-center gap-2 py-24 text-sm text-slate-400">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          {t('profile.loading')}
+        </div>
+      )}
+
+      {!loading && (error || !profile) && (
+        <div className="flex flex-col items-center gap-3 py-24 text-center">
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            {t('profile.notFound')}
+          </p>
+          <button
+            onClick={() => navigate('/search')}
+            className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800"
+          >
+            {t('search.title')}
+          </button>
+        </div>
+      )}
+
+      {!loading && !error && profile && (
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-900">
+          <div className="flex items-start gap-5">
+            <div className="relative shrink-0">
+              {resolveAvatarUrl(profile.avatarUrl) ? (
+                <img
+                  src={resolveAvatarUrl(profile.avatarUrl)!}
+                  alt=""
+                  className="h-20 w-20 rounded-full object-cover"
+                />
+              ) : (
+                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-indigo-100 text-xl font-semibold text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300">
+                  {initials(profile)}
+                </div>
+              )}
+              <span
+                className={`absolute bottom-1 right-1 h-4 w-4 rounded-full border-2 border-white dark:border-slate-900 ${
+                  profile.isOnline ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-600'
+                }`}
+              />
+            </div>
+
+            <div className="min-w-0 flex-1 pt-1">
+              <h1 className="truncate text-xl font-semibold text-slate-900 dark:text-slate-100">
+                {profile.displayName || profile.username}
+              </h1>
+              <p className="truncate text-sm text-slate-400">@{profile.username}</p>
+
+              <p className="mt-2 text-sm">
+                {profile.isOnline ? (
+                  <span className="font-medium text-emerald-600 dark:text-emerald-400">
+                    {t('search.online')}
+                  </span>
+                ) : (
+                  <span className="text-slate-400">{formatLastSeen(profile.lastSeen)}</span>
+                )}
+              </p>
+
+              <p className="mt-1 text-xs text-slate-400">
+                {t('profile.joined', { date: formatJoined(profile.createdAt) })}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-6 flex gap-2 border-t border-slate-100 pt-5 dark:border-slate-800">
+            {!isFriend && (
+            <button
+              onClick={handleAddFriend}
+              disabled={requestSent}
+              className="relative flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 py-2.5 text-sm font-medium text-slate-600 transition hover:border-indigo-300 hover:text-indigo-600 disabled:cursor-default disabled:opacity-60 dark:border-slate-700 dark:text-slate-300 dark:hover:border-indigo-700 dark:hover:text-indigo-400"
+            >
+              {requestSent ? <Check className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}
+              {requestSent ? t('friends.requestSent') : t('search.addFriend')}
+              {friendRequestError && (
+                <span className="absolute -top-9 w-max max-w-[16rem] rounded-md bg-destructive px-2 py-1 text-[11px] text-destructive-foreground shadow">
+                  {friendRequestError}
+                </span>
+              )}
+            </button>
+            )}
+            <button
+              onClick={handleMessage}
+              disabled={!isFriend}
+              title={isFriend ? undefined : t('search.messageFriendsOnly')}
+              className="relative disabled:cursor-not-allowed disabled:opacity-50 flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 py-2.5 text-sm font-medium text-slate-600 transition hover:border-indigo-300 hover:text-indigo-600 dark:border-slate-700 dark:text-slate-300 dark:hover:border-indigo-700 dark:hover:text-indigo-400"
+            >
+              <MessageCircle className="h-4 w-4" />
+              {t('search.message')}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
