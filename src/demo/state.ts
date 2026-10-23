@@ -66,13 +66,22 @@ export function priceHistory(symbol: string, days: number) {
   if (!asset) return [];
   const rand = mulberry32([...symbol].reduce((s, c) => s + c.charCodeAt(0) * 31, 7));
   const vol = asset.type === 'CRYPTO' ? 0.035 : 0.014;
-  const points: Array<{ time: number; value: number }> = [];
+  const points: Array<{ time: number; value: number; open: number; high: number; low: number; volume: number }> = [];
   let value = asset.currentPrice;
   const end = new Date();
   end.setUTCHours(0, 0, 0, 0);
   for (let d = 0; d <= days; d++) {
-    points.push({ time: Math.floor((end.getTime() - d * DAY) / 1000), value });
-    value = value / (1 + (rand() - 0.5) * 2 * vol);
+    const open = value / (1 + (rand() - 0.5) * 2 * vol);
+    const wick = () => 1 + rand() * vol * 0.6;
+    points.push({
+      time: Math.floor((end.getTime() - d * DAY) / 1000),
+      value,
+      open,
+      high: Math.max(open, value) * wick(),
+      low: Math.min(open, value) / wick(),
+      volume: Math.round(asset.volume24h * (0.4 + rand() * 1.2) / asset.currentPrice),
+    });
+    value = open;
   }
   return points.reverse();
 }

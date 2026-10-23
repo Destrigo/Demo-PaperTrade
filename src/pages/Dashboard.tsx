@@ -90,7 +90,7 @@ const Dashboard = () => {
                   <tr key={order.id} className="border-t border-border">
                     <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">{formatDateTime(order.createdAt)}</td>
                     <td className="px-3 py-2 font-medium">{order.asset?.symbol ?? '—'}</td>
-                    <td className={`px-3 py-2 font-semibold ${order.type === 'BUY' ? 'text-primary' : 'text-destructive'}`}>
+                    <td className={`px-3 py-2 font-semibold ${order.type === 'BUY' ? 'text-up' : 'text-down'}`}>
                       {t(SIDE_LABEL_KEY[order.type])}
                     </td>
                     <td className="px-3 py-2 font-mono">{formatQuantity(order.quantity)}</td>

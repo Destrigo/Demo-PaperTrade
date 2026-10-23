@@ -6,7 +6,7 @@ import { STATUS_LABEL_KEY } from '../utils/labels';
 import { formatCurrency, formatDateTime, formatPrice, formatQuantity } from '../utils/format';
 
 const STATUS_STYLES: Record<OrderStatus, string> = {
-  FILLED: 'bg-emerald-500/15 text-emerald-600',
+  FILLED: 'bg-up/15 text-up',
   PENDING: 'bg-amber-500/15 text-amber-600',
   CANCELLED: 'bg-muted text-muted-foreground',
 };
@@ -60,7 +60,7 @@ export default function OrderHistoryTable({ refreshKey }: OrderHistoryTableProps
                 <div className="flex flex-wrap items-center gap-2">
                   <span
                     className={`text-xs font-semibold uppercase ${
-                      order.type === 'BUY' ? 'text-primary' : 'text-destructive'
+                      order.type === 'BUY' ? 'text-up' : 'text-down'
                     }`}
                   >
                     {order.type === 'BUY' ? t('trading.buy') : t('trading.sell')}

@@ -25,7 +25,8 @@ export default function PriceChart({ data, emptyMessage }: PriceChartProps) {
       autoSize: true,
       layout: {
         background: { color: 'transparent' },
-        textColor: `hsl(${cssVar('--foreground')})`,
+        textColor: `hsl(${cssVar('--muted-foreground')})`,
+        fontFamily: "'IBM Plex Mono', monospace",
       },
       grid: {
         vertLines: { color: `hsl(${cssVar('--border')})` },
@@ -60,7 +61,7 @@ export default function PriceChart({ data, emptyMessage }: PriceChartProps) {
     });
     chartRef.current = chart;
   
-    const series = chart.addSeries(LineSeries, { color: '#2563eb', lineWidth: 2 });
+    const series = chart.addSeries(LineSeries, { color: '#3dffb0', lineWidth: 2 });
     const chartData = data.map((point) => ({ time: point.time as UTCTimestamp, value: point.value }));
     series.setData(chartData);
   

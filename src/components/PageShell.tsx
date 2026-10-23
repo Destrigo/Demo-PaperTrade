@@ -4,6 +4,7 @@ import { consumeOAuthReturn } from '../auth/oauthReturn';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import TickerTape from './TickerTape';
 
 export default function PageShell() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -19,9 +20,10 @@ export default function PageShell() {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-muted">
+    <div className="flex min-h-screen bg-background">
       <Sidebar open={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />
       <div className="flex min-w-0 flex-1 flex-col">
+        <TickerTape />
         <Navbar onMenuClick={() => setMobileNavOpen(true)} />
         <main className="flex-1 overflow-y-auto">
           <Outlet />

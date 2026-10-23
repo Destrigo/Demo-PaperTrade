@@ -212,7 +212,7 @@
     "marketCap": "Market cap",
     "searchPlaceholder": "Search assets...",
     "noResults": "No assets found",
-    "liveUpdate": "Live prices"
+    "liveUpdate": "Simulated live prices"
   },
   "trading": {
     "title": "Trade",
@@ -523,7 +523,7 @@
     "cancel": "Cancel"
   },
   "index": {
-    "tagline": "Simulated trading with real market data and no real money."
+    "tagline": "Simulated trading with virtual money. This demo runs on simulated prices."
   },
   "privacy": {
     "title": "Privacy Policy",

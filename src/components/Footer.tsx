@@ -5,7 +5,7 @@ export default function Footer() {
   const { t } = useTranslation();
 
   return (
-    <footer className="mt-auto border-t border-border bg-card px-4 py-6">
+    <footer className="mt-auto border-t border-border bg-background px-4 pb-16 pt-6">
       <div className="mx-auto flex max-w-4xl flex-col items-center gap-2 text-center text-xs text-muted-foreground sm:flex-row sm:justify-between sm:text-left">
         <p>© {new Date().getFullYear()} PaperTrade — {t('footer.simulatedOnly')}</p>
         <nav className="flex gap-4">

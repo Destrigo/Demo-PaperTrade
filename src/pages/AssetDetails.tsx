@@ -4,7 +4,7 @@ import { Link, Navigate, useParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import type { Asset, Order, Portfolio, PricePoint } from '../types/types';
 import { fetchAssetBySymbol, fetchAssetHistory, fetchOrders, fetchPortfolio } from '../services/trading.service';
-import PriceChart from '../components/PriceChart';
+import CandleChart from '../components/CandleChart';
 import OrderPanel from '../components/OrdersPanel';
 import {
   EMPTY_VALUE,
@@ -144,8 +144,8 @@ export default function AssetDetailsPage() {
             </div>
             <div
               className={`flex flex-wrap items-baseline gap-x-2 rounded font-mono transition-colors duration-500 ${
-                flash === 'up' ? 'bg-emerald-500/15' : ''
-              } ${flash === 'down' ? 'bg-destructive/15' : ''}`}
+                flash === 'up' ? 'bg-up/15' : ''
+              } ${flash === 'down' ? 'bg-down/20' : ''}`}
             >
               <span className="break-all text-2xl">{formatPrice(price)}</span>
               <span className={`text-sm ${pnlClass(change24h)}`}>{formatPercent(change24h, { signed: true })}</span>
@@ -178,7 +178,7 @@ export default function AssetDetailsPage() {
               </button>
             ))}
           </div>
-          <PriceChart data={visibleHistory} />
+          <CandleChart data={visibleHistory} livePrice={price} />
         </div>
 
         <div className="min-w-0 lg:col-start-2 lg:row-start-1">
@@ -222,7 +222,7 @@ export default function AssetDetailsPage() {
                   <div>
                     <span
                       className={`text-xs font-semibold uppercase ${
-                        order.type === 'BUY' ? 'text-primary' : 'text-destructive'
+                        order.type === 'BUY' ? 'text-up' : 'text-down'
                       }`}
                     >
                       {t(SIDE_LABEL_KEY[order.type])}

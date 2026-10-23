@@ -73,8 +73,8 @@ export function formatPercent(value: number | string | null | undefined, opts?: 
 /** Tailwind text color for a gain/loss value — neutral when it rounds to 0. */
 export function pnlClass(value: number | string | null | undefined, decimals = 2) {
   const r = roundTo(toNumber(value), decimals);
-  if (r > 0) return 'text-emerald-600';
-  if (r < 0) return 'text-destructive';
+  if (r > 0) return 'text-up';
+  if (r < 0) return 'text-down';
   return '';
 }
 

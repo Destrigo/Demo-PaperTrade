@@ -131,7 +131,9 @@ export default function OrderPanel({ asset, holding, balance, onOrderPlaced }: O
             onClick={() => setSide(s)}
             className={`rounded py-1.5 text-sm font-semibold transition-colors ${
               side === s
-                ? 'bg-accent text-foreground'
+                ? s === 'BUY'
+                  ? 'bg-up text-background'
+                  : 'bg-down text-background'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
@@ -230,7 +232,9 @@ export default function OrderPanel({ asset, holding, balance, onOrderPlaced }: O
       <button
         disabled={!canSubmit}
         onClick={() => setShowConfirm(true)}
-        className="mt-auto rounded-md bg-primary py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+        className={`mt-auto py-2.5 text-sm font-semibold uppercase tracking-wider text-background transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40 ${
+          side === 'BUY' ? 'bg-up' : 'bg-down'
+        }`}
       >
         {submitting
           ? t('trading.orderPanel.placingOrder')
@@ -249,7 +253,7 @@ export default function OrderPanel({ asset, holding, balance, onOrderPlaced }: O
             <div className="mt-3 space-y-1.5 font-mono text-sm">
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">{t('trading.side')}</span>
-                <span className={side === 'BUY' ? 'text-primary' : 'text-destructive'}>
+                <span className={side === 'BUY' ? 'text-up' : 'text-down'}>
                   {side === 'BUY' ? t('trading.buy') : t('trading.sell')}
                 </span>
               </div>

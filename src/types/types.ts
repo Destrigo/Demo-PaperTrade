@@ -85,4 +85,8 @@ export interface Order {
 export interface PricePoint {
 	time: number;
 	value: number;
+	open?: number;
+	high?: number;
+	low?: number;
+	volume?: number;
 }

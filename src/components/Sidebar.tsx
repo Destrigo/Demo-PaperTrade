@@ -28,10 +28,10 @@ const NAV_ITEMS = [
 ];
 
 const linkClasses = ({ isActive }: { isActive: boolean }) =>
-  `flex items-center gap-3 rounded px-3 py-2.5 text-sm font-medium transition-colors ${
+  `flex items-center gap-3 border-l-2 px-3 py-2.5 text-sm font-medium transition-colors ${
     isActive
-      ? 'bg-primary text-primary-foreground'
-      : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+      ? 'border-primary bg-accent text-up'
+      : 'border-transparent text-muted-foreground hover:bg-accent hover:text-primary'
   }`;
 
 interface SidebarProps {
@@ -59,7 +59,9 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
         }`}
       >
         <div className="flex items-center justify-between px-5 py-5">
-          <span className="text-lg font-bold tracking-tight">PaperTrade</span>
+          <span className="font-display text-lg font-bold uppercase tracking-tight text-foreground">
+            <span className="text-primary">&gt;</span> PaperTrade
+          </span>
           <button
             type="button"
             onClick={onClose}

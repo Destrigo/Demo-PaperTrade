@@ -19,7 +19,7 @@ function AssetRow({ asset, isSelected, onSelect }: AssetRowProps) {
       onClick={onSelect}
       className={`grid w-full grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-2 sm:grid-cols-[minmax(0,1fr)_auto_auto_auto] border-b border-border px-3 py-2.5 text-left transition-colors duration-500 ${
         isSelected ? 'bg-accent' : 'hover:bg-accent/60'
-      } ${flash === 'up' ? 'bg-emerald-500/15' : ''} ${flash === 'down' ? 'bg-destructive/15' : ''}`}
+      } ${flash === 'up' ? 'bg-up/15' : ''} ${flash === 'down' ? 'bg-down/20' : ''}`}
     >
       <span className="flex min-w-0 items-center gap-2 truncate">
         <span className="font-mono text-sm font-semibold">{asset.symbol}</span>

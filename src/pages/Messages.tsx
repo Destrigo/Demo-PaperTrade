@@ -165,7 +165,7 @@ export default function MessagesPage() {
                 <Avatar url={f.avatarUrl} label={f.displayName || f.username} size={8} />
                 <span
                   className={`absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-card ${
-                    (presenceReady ? onlineUserIds.has(f.id) : f.isOnline) ? 'bg-emerald-500' : 'bg-muted-foreground/40'
+                    (presenceReady ? onlineUserIds.has(f.id) : f.isOnline) ? 'bg-up' : 'bg-muted-foreground/40'
                   }`}
                 />
               </span>

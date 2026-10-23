@@ -49,7 +49,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             role="status"
             className={`pointer-events-auto flex max-w-sm items-start gap-2 rounded-lg border px-4 py-3 text-sm shadow-lg ${
               toast.variant === 'success'
-                ? 'border-emerald-600/30 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300'
+                ? 'border-up/40 bg-up/10 text-up'
                 : 'border-destructive/30 bg-destructive/10 text-destructive'
             }`}
           >

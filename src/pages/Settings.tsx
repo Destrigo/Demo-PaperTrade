@@ -359,7 +359,7 @@ export default function Settings() {
                   alt={t('profile.avatarAlt')}
                   className="h-20 w-20 rounded-full object-cover"
                 />
-                <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/0 text-[10px] font-medium text-transparent transition-colors group-hover:bg-black/40 group-hover:text-white">
+                <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/0 text-[10px] font-medium text-transparent transition-colors group-hover:bg-black/40 group-hover:text-foreground">
                   {avatarUploading ? t('profile.uploading') : t('profile.changeAvatar')}
                 </span>
                 <input
@@ -377,7 +377,7 @@ export default function Settings() {
                 <div className="flex items-center gap-1 text-xs text-muted-foreground">
                   <span
                     className={`inline-block h-2 w-2 rounded-full ${
-                      user.isOnline ? 'bg-green-500' : 'bg-gray-400'
+                      user.isOnline ? 'bg-up' : 'bg-muted-foreground/40'
                     }`}
                   />
                   {user.isOnline ? t('profile.online') : t('profile.offline')}
@@ -467,7 +467,7 @@ export default function Settings() {
 
               {saveError && <p className="text-sm text-destructive">{saveError}</p>}
               {saveSuccess && (
-                <p className="text-sm text-green-600">{t('profile.saved')}</p>
+                <p className="text-sm text-up">{t('profile.saved')}</p>
               )}
 
               <button
@@ -528,7 +528,7 @@ export default function Settings() {
             <p className="text-sm text-destructive">{passwordError}</p>
           )}
           {passwordSuccess && (
-            <p className="text-sm text-green-600">{t('settings.passwordChanged')}</p>
+            <p className="text-sm text-up">{t('settings.passwordChanged')}</p>
           )}
 
           <button
@@ -551,7 +551,7 @@ export default function Settings() {
             <div className="flex flex-wrap items-center gap-3">
               <span
                 className={`inline-block h-2 w-2 rounded-full ${
-                  user.twoFactorEnabled ? 'bg-green-500' : 'bg-gray-400'
+                  user.twoFactorEnabled ? 'bg-up' : 'bg-muted-foreground/40'
                 }`}
               />
               <span className="text-sm">
@@ -583,7 +583,7 @@ export default function Settings() {
           {twoFAStep === 'setup' && (
             <div className="space-y-3 rounded border border-input p-4">
               <p className="text-sm">{t('settings.twoFactorScanPrompt')}</p>
-              <div className="flex justify-center rounded bg-white p-3">
+              <div className="flex justify-center rounded bg-card p-3">
                 <QRCodeSVG value={twoFAUri} size={180} />
               </div>
               <p className="break-all text-center text-xs text-muted-foreground">

@@ -55,7 +55,7 @@ export default function OpenOrdersTable({ orders, onCancelled }: OpenOrdersTable
               <div className="flex items-center gap-2">
                 <span
                   className={`text-xs font-semibold uppercase ${
-                    order.type === 'BUY' ? 'text-primary' : 'text-destructive'
+                    order.type === 'BUY' ? 'text-up' : 'text-down'
                   }`}
                 >
                   {order.type === 'BUY' ? t('trading.buy') : t('trading.sell')}

@@ -115,13 +115,13 @@ export default function SearchPage() {
         <h1 className="text-2xl font-semibold text-foreground">
           {t('search.title')}
         </h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-sm text-muted-foreground">
           {t('search.subtitle')}
         </p>
       </header>
 
       <div className="relative mb-6">
-        <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+        <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <input
           type="text"
           value={query}
@@ -129,21 +129,21 @@ export default function SearchPage() {
           maxLength={50}
           placeholder={t('search.placeholder')}
           aria-label={t('search.placeholder')}
-          className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-sm text-slate-900 shadow-sm outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:ring-indigo-900/40"
+          className="w-full rounded-xl border border-border bg-card py-2.5 pl-10 pr-4 text-sm text-foreground shadow-sm outline-none transition focus:border-ring focus:ring-2 focus:ring-ring/40"
           autoFocus
         />
       </div>
 
       {/* Empty / prompt state */}
       {!debouncedQuery.trim() && (
-        <p className="py-12 text-center text-sm text-slate-400 dark:text-slate-500">
+        <p className="py-12 text-center text-sm text-muted-foreground">
           {t('search.noQuery')}
         </p>
       )}
 
       {/* Loading state */}
       {loading && (
-        <div className="flex items-center justify-center gap-2 py-12 text-sm text-slate-400">
+        <div className="flex items-center justify-center gap-2 py-12 text-sm text-muted-foreground">
           <Loader2 className="h-4 w-4 animate-spin" />
           {t('search.loading')}
         </div>
@@ -151,11 +151,11 @@ export default function SearchPage() {
 
       {/* Error state */}
       {!loading && error && (
-        <div className="flex flex-col items-center gap-3 py-12 text-sm text-slate-500">
+        <div className="flex flex-col items-center gap-3 py-12 text-sm text-muted-foreground">
           <span>{t('search.error')}</span>
           <button
             onClick={() => setRetryKey((k) => k + 1)}
-            className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800"
+            className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium hover:bg-accent"
           >
             {t('search.retry')}
           </button>
@@ -164,7 +164,7 @@ export default function SearchPage() {
 
       {/* No results */}
       {!loading && !error && debouncedQuery.trim() && visibleResults.length === 0 && (
-        <p className="py-12 text-center text-sm text-slate-400 dark:text-slate-500">
+        <p className="py-12 text-center text-sm text-muted-foreground">
           {t('search.noResults', { query: debouncedQuery.trim() })}
         </p>
       )}
@@ -172,7 +172,7 @@ export default function SearchPage() {
       {/* Results */}
       {!loading && !error && visibleResults.length > 0 && (
         <>
-          <p className="mb-3 text-xs font-medium uppercase tracking-wide text-slate-400">
+          <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
             {t('search.resultsCount', { count: total - (results.length - visibleResults.length) })}
           </p>
 
@@ -184,7 +184,7 @@ export default function SearchPage() {
               <li
                 key={u.id}
                 onClick={() => navigate(`/profile/${u.id}`)}
-                className="group flex cursor-pointer items-center gap-4 rounded-xl border border-slate-200 bg-white p-3 transition hover:border-indigo-200 hover:shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:hover:border-indigo-800"
+                className="group flex cursor-pointer items-center gap-4 rounded-xl border border-border bg-card p-3 transition hover:border-primary hover:shadow-sm"
               >
                 <div className="relative shrink-0">
                   {resolveAvatarUrl(u.avatarUrl) ? (
@@ -194,26 +194,26 @@ export default function SearchPage() {
                       className="h-11 w-11 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="flex h-11 w-11 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-full bg-accent text-sm font-semibold text-primary">
                       {initials(u)}
                     </div>
                   )}
                   <span
-                    className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white dark:border-slate-900 ${
-                      u.isOnline ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-600'
+                    className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-card ${
+                      u.isOnline ? 'bg-up' : 'bg-muted-foreground/40'
                     }`}
                   />
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">
+                  <p className="truncate text-sm font-medium text-foreground">
                     {u.displayName || u.username}
                   </p>
-                  <p className="truncate text-xs text-slate-400">
+                  <p className="truncate text-xs text-muted-foreground">
                     @{u.username}
                     {' · '}
                     {u.isOnline ? (
-                      <span className="text-emerald-600 dark:text-emerald-400">
+                      <span className="text-up">
                         {t('search.online')}
                       </span>
                     ) : (
@@ -229,11 +229,11 @@ export default function SearchPage() {
                     aria-label={requested ? t('friends.requestSent') : t('search.addFriend')}
                     disabled={requested}
                     onClick={handleAddFriend(u.id)}
-                    className="relative flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:border-indigo-300 hover:text-indigo-600 disabled:cursor-default disabled:opacity-50 dark:border-slate-700 dark:text-slate-400 dark:hover:border-indigo-700 dark:hover:text-indigo-400"
+                    className="relative flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-foreground transition hover:border-primary hover:text-primary disabled:cursor-default disabled:opacity-50"
                   >
                     {requested ? <Check className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}
                     {flashed?.id === u.id && flashed.kind === 'sent' && (
-                      <span className="absolute -top-8 right-0 whitespace-nowrap rounded-md bg-slate-800 px-2 py-1 text-[11px] text-white shadow">
+                      <span className="absolute -top-8 right-0 whitespace-nowrap rounded-md bg-accent px-2 py-1 text-[11px] text-foreground shadow">
                         {t('friends.requestSent')}
                       </span>
                     )}
@@ -249,7 +249,7 @@ export default function SearchPage() {
                     aria-label={isFriend ? t('search.message') : t('search.messageFriendsOnly')}
                     disabled={!isFriend}
                     onClick={handleMessage(u.id)}
-                    className="relative flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:border-indigo-300 hover:text-indigo-600 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:text-slate-400 dark:hover:border-indigo-700 dark:hover:text-indigo-400"
+                    className="relative flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-foreground transition hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     <MessageCircle className="h-4 w-4" />
                   </button>
@@ -264,17 +264,17 @@ export default function SearchPage() {
               <button
                 disabled={page <= 1}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="rounded-lg border border-slate-200 px-3 py-1.5 font-medium disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700"
+                className="rounded-lg border border-border px-3 py-1.5 font-medium disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {t('search.prev')}
               </button>
-              <span className="text-slate-400">
+              <span className="text-muted-foreground">
                 {t('search.page', { page, totalPages })}
               </span>
               <button
                 disabled={page >= totalPages}
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                className="rounded-lg border border-slate-200 px-3 py-1.5 font-medium disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700"
+                className="rounded-lg border border-border px-3 py-1.5 font-medium disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {t('search.next')}
               </button>

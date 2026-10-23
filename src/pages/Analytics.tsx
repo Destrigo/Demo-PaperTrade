@@ -479,8 +479,8 @@ export default function Analytics() {
                         <td
                           className={`px-3 py-2 font-semibold ${
                             trade.type === 'BUY'
-                              ? 'text-green-600'
-                              : 'text-red-600'
+                              ? 'text-up'
+                              : 'text-down'
                           }`}
                         >
                           {t(SIDE_LABEL_KEY[trade.type])}

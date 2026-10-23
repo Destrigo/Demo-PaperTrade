@@ -24,7 +24,7 @@ export default function FriendCard({ friend, online, onRemove }: FriendCardProps
         <Avatar url={friend.avatarUrl} label={friend.displayName || friend.username} size={11} />
         <span
           className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-card ${
-            online ? 'bg-emerald-500' : 'bg-muted-foreground/40'
+            online ? 'bg-up' : 'bg-muted-foreground/40'
           }`}
         />
       </button>

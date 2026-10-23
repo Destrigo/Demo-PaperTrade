@@ -165,7 +165,7 @@ export default function FriendsPage() {
                       disabled={busyId === r.id}
                       onClick={() => handleAccept(r.id)}
                       title={t('friends.accept')}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-emerald-600 transition hover:border-emerald-300 hover:bg-emerald-50 disabled:opacity-40 dark:hover:bg-emerald-950"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-up transition hover:border-up hover:bg-up/10 disabled:opacity-40"
                     >
                       <UserCheck className="h-4 w-4" />
                     </button>
